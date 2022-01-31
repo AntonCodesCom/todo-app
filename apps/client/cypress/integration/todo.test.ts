@@ -34,8 +34,14 @@ const mockItems: TodoItem[] = todoItemInitBatch([
 //
 it('Todo', () => {
   cy.intercept(
-    `${serverBaseUrl}/todo`
-    // { body: { data: mockItems } }
+    {
+      method: 'GET',
+      url: `${serverBaseUrl}/todo`,
+    },
+    (req) => {
+      req.headers['Cache-Control'] = 'no-cache';
+      // req.reply({ body: { data: mockItems }});
+    }
   ).as('fetchRequest');
   cy.visit('/');
   cy.wait('@fetchRequest').its('response').as('fetchResponse');
