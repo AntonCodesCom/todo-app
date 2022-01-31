@@ -33,9 +33,10 @@ const mockItems: TodoItem[] = todoItemInitBatch([
 // e2e test
 //
 it('Todo', () => {
-  cy.intercept(`${serverBaseUrl}/todo`, { body: { data: mockItems } }).as(
-    'fetchRequest'
-  );
+  cy.intercept(
+    `${serverBaseUrl}/todo`
+    // { body: { data: mockItems } }
+  ).as('fetchRequest');
   cy.visit('/');
   cy.wait('@fetchRequest').its('response').as('fetchResponse');
   cy.findByRole('list', { name: /^my todos$/i })
