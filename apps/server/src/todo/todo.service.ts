@@ -3,7 +3,6 @@ import PrismaService from 'src/prisma/prisma.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import TodoEntity from './entities/todo.entity';
-import todosFixture from './fixtures/todos.fixture';
 
 @Injectable()
 export default class TodoService {
