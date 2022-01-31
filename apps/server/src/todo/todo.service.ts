@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import PrismaService from 'src/prisma/prisma.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import TodoEntity from './entities/todo.entity';
@@ -6,12 +7,14 @@ import todosFixture from './fixtures/todos.fixture';
 
 @Injectable()
 export default class TodoService {
+  constructor(private readonly prismaService: PrismaService) {}
+
   create(createTodoDto: CreateTodoDto) {
     return 'This action adds a new todo';
   }
 
-  findAll(): TodoEntity[] {
-    return todosFixture;
+  async findAll(): Promise<TodoEntity[]> {
+    return await this.prismaService.todos.findMany();
   }
 
   findOne(id: number) {
