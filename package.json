@@ -1,0 +1,7 @@
+{
+  "name": "@antoncodes/todo",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ]
+}
