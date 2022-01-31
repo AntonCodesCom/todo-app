@@ -14,9 +14,9 @@ export default function TodoList({ items, labelledBy }: TodoListProps) {
       data-hash={commonHash(items)}
       style={{ listStyle: 'none', margin: 0, padding: 0 }}
     >
-      <TodoCard />
-      <TodoCard />
-      <TodoCard />
+      {items.map((x, i) => (
+        <TodoCard key={i} item={x} />
+      ))}
     </ul>
   );
 }
