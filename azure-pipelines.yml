@@ -31,9 +31,9 @@ stages:
       displayName: 'Install Node.js'
 
     - script: |
-        npm install --only=prod
-        npm install ---only=dev -w @antoncodes/server
-      displayName: 'npm install'
+        npm ci --only=prod --ignore-scripts
+        npm ci ---only=dev --ignore-scripts -w @antoncodes/server
+      displayName: 'npm ci'
     
     - script: |
         npm run test:ci -ws --if-present
@@ -44,7 +44,7 @@ stages:
       displayName: 'npm run build'
 
     - task: ArchiveFiles@2
-      displayName: 'Archive files'
+      displayName: 'Archive server files'
       inputs:
         rootFolderOrFile: '$(System.DefaultWorkingDirectory)/apps/server'
         includeRootFolder: false
@@ -56,7 +56,7 @@ stages:
       artifact: server
 
 - stage: Deploy
-  displayName: Deploy stage
+  displayName: Server deploy stage
   dependsOn: Build
   condition: succeeded()
   jobs:
