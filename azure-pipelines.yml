@@ -81,7 +81,7 @@ stages:
           - task: AzureWebApp@1
             displayName: 'Azure Web App Deploy: $(webAppName)'
             inputs:
-              azureSubscription: $(azureSubscription)
+              azureSubscription: $(SUBSCRIPTION_UUID)
               appType: webAppLinux
               appName: $(webAppName)
               runtimeStack: $(appServiceStack)
