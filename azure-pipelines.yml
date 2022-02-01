@@ -149,12 +149,6 @@ stages:
         path: $(cypress_cache_folder)
         restoreKeys: cypress | $(Agent.OS) | package-lock.json
       displayName: Cache Cypress binary
-
-    - task: Npm@1
-      displayName: 'Run E2E tests: npm run e2e:ci'
-      inputs:
-        command: 'custom'
-        customCommand: 'run e2e:ci'
     
     - script: |
         npm ci --ignore-scripts -w @antoncodes/client
