@@ -74,7 +74,7 @@ stages:
   jobs:
   - deployment: Deploy
     displayName: Deploy
-    environment: $(WEB_APP_NAME)
+    environment: $(SERVER_WEB_APP_NAME)
     pool:
       vmImage: $(vmImageName)
     strategy:
@@ -82,11 +82,11 @@ stages:
         deploy:
           steps:
           - task: AzureWebApp@1
-            displayName: 'Azure Web App Deploy: $(WEB_APP_NAME)'
+            displayName: 'Azure Web App Deploy: $(SERVER_WEB_APP_NAME)'
             inputs:
               azureSubscription: $(SUBSCRIPTION_UUID)
               appType: webAppLinux
-              appName: $(WEB_APP_NAME)
+              appName: $(SERVER_WEB_APP_NAME)
               runtimeStack: $(appServiceStack)
               package: $(Pipeline.Workspace)/server/$(Build.BuildId).zip
               startUpCommand: 'cd /home/site/wwwroot && npm install --only=prod && npm run start:ci'
