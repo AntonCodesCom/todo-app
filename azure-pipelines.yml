@@ -77,4 +77,4 @@ stages:
               appName: $(WEB_APP_NAME)
               runtimeStack: $(appServiceStack)
               package: $(Pipeline.Workspace)/server/$(Build.BuildId).zip
-              startUpCommand: 'npm install --only=prod && npm run start:ci'
+              startUpCommand: 'cd /home/site/wwwroot'
