@@ -2,9 +2,6 @@ import TodoItem from '../../src/Todo/interfaces/item';
 import commonHash from '../../src/Common/utils/hash';
 import todoItemInitBatch from '../../src/Todo/utils/item-init-batch';
 
-// config
-const serverBaseUrl = 'http://localhost:3001'; // TODO: env
-
 // test data
 const mockItems: TodoItem[] = todoItemInitBatch([
   {
@@ -36,7 +33,7 @@ it('Todo', () => {
   cy.intercept(
     {
       method: 'GET',
-      url: `${serverBaseUrl}/todo`,
+      url: new URL('todo', Cypress.env('SERVER_BASE_URL')).toString(),
     },
     (req) => {
       req.headers['Cache-Control'] = 'no-cache';

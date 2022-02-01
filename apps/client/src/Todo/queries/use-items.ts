@@ -1,4 +1,5 @@
 import CommonQueryResult from 'Common/interfaces/query-result';
+import commonFetch from 'Common/utils/fetch';
 import { useEffect, useState } from 'react';
 import todoItemsFixture from 'Todo/fixtures/items';
 import TodoItem from 'Todo/interfaces/item';
@@ -27,7 +28,7 @@ function useTodoItemsProd(): CommonQueryResult<TodoItem[]> {
   const [data, setData] = useState<TodoItem[]>();
 
   useEffect(() => {
-    fetch('http://localhost:3001/todo')
+    commonFetch('/todo')
       .then((res) => res.json())
       .then((data) => setData(data.data as TodoItem[]))
       .catch((err) => setError(err))
