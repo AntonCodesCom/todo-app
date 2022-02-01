@@ -15,6 +15,10 @@ variables:
   nodeJsVersion: '16.x'
   appServiceStack: 'NODE|16-lts'
 
+  # NPM cache directory
+  npm_config_cache: $(Pipeline.Workspace)/.npm
+  cypress_cache_folder: $(Pipeline.Workspace)/.cache/Cypress
+
 stages:
 - stage: Build
   displayName: Build stage
@@ -115,3 +119,47 @@ stages:
               packageForLinux: '$(Pipeline.Workspace)/client/$(Build.BuildId).zip'
               RuntimeStack: $(appServiceStack)
               StartupCommand: 'pm2 serve /home/site/wwwroot --no-daemon --spa'
+
+- stage: E2E
+  displayName: Cypress E2E testing stage
+  dependsOn: ClientDeploy
+  condition: succeeded()
+  jobs:
+  - job: Test
+    displayName: E2E Test
+    pool:
+      vmImage: $(vmImageName)
+
+    steps:
+    - task: NodeTool@0
+      displayName: 'Install Node.js LTS'
+      inputs:
+        versionSpec: '$(nodeJsVersion)'
+
+    - task: Cache@2
+      inputs:
+        key: npm | $(Agent.OS) | package-lock.json
+        path: $(npm_config_cache)
+        restoreKeys: npm | $(Agent.OS) | package-lock.json
+      displayName: Cache NPM packages
+
+    - task: Cache@2
+      inputs:
+        key: cypress | $(Agent.OS) | package-lock.json
+        path: $(cypress_cache_folder)
+        restoreKeys: cypress | $(Agent.OS) | package-lock.json
+      displayName: Cache Cypress binary
+
+    - task: Npm@1
+      displayName: 'Run E2E tests: npm run e2e:ci'
+      inputs:
+        command: 'custom'
+        customCommand: 'run e2e:ci'
+    
+    - script: |
+        npm ci --ignore-scripts -w @antoncodes/client
+      displayName: 'npm ci'
+    
+    - script: |
+        npm run e2e:ci -w @antoncodes/client
+      displayName: 'npm run e2e:ci'
