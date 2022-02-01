@@ -54,8 +54,20 @@ stages:
 
     - upload: $(Build.ArtifactStagingDirectory)/server/$(Build.BuildId).zip
       artifact: server
+    
+    - task: ArchiveFiles@2
+      displayName: 'Archive client files'
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/apps/client/build'
+        includeRootFolder: false
+        archiveType: zip
+        archiveFile: $(Build.ArtifactStagingDirectory)/client/$(Build.BuildId).zip
+        replaceExistingArchive: true
 
-- stage: Deploy
+    - upload: $(Build.ArtifactStagingDirectory)/client/$(Build.BuildId).zip
+      artifact: client
+
+- stage: ServerDeploy
   displayName: Server deploy stage
   dependsOn: Build
   condition: succeeded()
@@ -78,3 +90,28 @@ stages:
               runtimeStack: $(appServiceStack)
               package: $(Pipeline.Workspace)/server/$(Build.BuildId).zip
               startUpCommand: 'cd /home/site/wwwroot && npm install --only=prod && npm run start:ci'
+
+- stage: ClientDeploy
+  displayName: Client deploy stage
+  dependsOn: ServerDeploy
+  condition: succeeded()
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy
+    environment: $(CLIENT_WEB_APP_NAME)
+    pool:
+      vmImage: $(vmImageName)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureRmWebAppDeployment@4
+            displayName: 'Azure App Service Deploy: $(CLIENT_WEB_APP_NAME)'
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: $(SUBSCRIPTION_UUID)
+              appType: webAppLinux
+              WebAppName: $(CLIENT_WEB_APP_NAME)
+              packageForLinux: '$(Pipeline.Workspace)/client/$(Build.BuildId).zip'
+              RuntimeStack: $(appServiceStack)
+              StartupCommand: 'pm2 serve /home/site/wwwroot --no-daemon --spa'
