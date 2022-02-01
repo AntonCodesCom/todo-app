@@ -8,15 +8,6 @@ trigger:
 
 variables:
 
-  # Azure Resource Manager connection created during pipeline creation
-  azureSubscription: $(SUBSCRIPTION_UUID)
-
-  # Web app name
-  webAppName: $(WEB_APP_NAME)
-
-  # Environment name
-  environmentName: $(WEB_APP_NAME)
-
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
 
@@ -58,10 +49,10 @@ stages:
         rootFolderOrFile: '$(System.DefaultWorkingDirectory)/apps/server'
         includeRootFolder: false
         archiveType: zip
-        archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+        archiveFile: $(Build.ArtifactStagingDirectory)/server/$(Build.BuildId).zip
         replaceExistingArchive: true
 
-    - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+    - upload: $(Build.ArtifactStagingDirectory)/server/$(Build.BuildId).zip
       artifact: server
 
 - stage: Deploy
@@ -71,7 +62,7 @@ stages:
   jobs:
   - deployment: Deploy
     displayName: Deploy
-    environment: $(environmentName)
+    environment: $(WEB_APP_NAME)
     pool:
       vmImage: $(vmImageName)
     strategy:
@@ -79,11 +70,11 @@ stages:
         deploy:
           steps:
           - task: AzureWebApp@1
-            displayName: 'Azure Web App Deploy: $(webAppName)'
+            displayName: 'Azure Web App Deploy: $(WEB_APP_NAME)'
             inputs:
               azureSubscription: $(SUBSCRIPTION_UUID)
               appType: webAppLinux
-              appName: $(webAppName)
+              appName: $(WEB_APP_NAME)
               runtimeStack: $(appServiceStack)
               package: $(Pipeline.Workspace)/server/$(Build.BuildId).zip
               startUpCommand: 'npm run start:ci'
