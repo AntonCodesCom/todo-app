@@ -1,6 +1,6 @@
 # AntonCodes - Todo App
 
-A demo application repository for the AntonCodes channel:
+An **alternative** version of the demo application repository for the AntonCodes channel:
 
 https://www.youtube.com/channel/UCB6hH4uyI3AigJkTNoQ_bcg
 
