@@ -34,12 +34,12 @@ stages:
         versionSpec: '$(nodeJsVersion)'
       displayName: 'Install Node.js'
 
-    - task: Cache@2
-      inputs:
-        key: npm | $(Agent.OS) | package-lock.json
-        path: $(npm_config_cache)
-        restoreKeys: npm | $(Agent.OS) | package-lock.json
-      displayName: Cache NPM packages
+    #- task: Cache@2
+    #  inputs:
+    #    key: npm | $(Agent.OS) | package-lock.json
+    #    path: $(npm_config_cache)
+    #    restoreKeys: npm | $(Agent.OS) | package-lock.json
+    #  displayName: Cache NPM packages
 
     - script: |
         CYPRESS_INSTALL_BINARY=0 npm ci --ignore-scripts
@@ -50,8 +50,8 @@ stages:
       displayName: 'npm run test:ci'
     
     - script: |
-        npm run build -w @antoncodes/client
-      displayName: 'npm run build (client)'
+        npm run build -ws --if-present
+      displayName: 'npm run build'
 
     - task: ArchiveFiles@2
       displayName: 'Archive server files'
@@ -99,7 +99,7 @@ stages:
               appName: $(SERVER_WEB_APP_NAME)
               runtimeStack: $(appServiceStack)
               package: $(Pipeline.Workspace)/server/$(Build.BuildId).zip
-              startUpCommand: 'cd /home/site/wwwroot && npm install --only=prod && npm run build && npm run start:ci'
+              startUpCommand: 'cd /home/site/wwwroot && npm install --only=prod && npm run start:ci'
 
 - stage: ClientDeploy
   displayName: Client deploy stage
