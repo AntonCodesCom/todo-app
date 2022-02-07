@@ -99,7 +99,7 @@ stages:
               appName: $(SERVER_WEB_APP_NAME)
               runtimeStack: $(appServiceStack)
               package: $(Pipeline.Workspace)/server/$(Build.BuildId).zip
-              startUpCommand: 'cd /home/site/wwwroot && npm install --only=prod && npm run start:ci'
+              startUpCommand: 'cd /home/site/wwwroot && npm install --only=prod && npm run build && npm run start:ci'
 
 - stage: ClientDeploy
   displayName: Client deploy stage
