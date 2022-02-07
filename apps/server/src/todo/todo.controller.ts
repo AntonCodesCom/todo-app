@@ -21,8 +21,8 @@ export default class TodoController {
   }
 
   @Get()
-  findAll() {
-    const todos = this.todoService.findAll();
+  async findAll() {
+    const todos = await this.todoService.findAll();
     return { data: todos };
   }
 
