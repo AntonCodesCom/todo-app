@@ -34,9 +34,16 @@ stages:
         versionSpec: '$(nodeJsVersion)'
       displayName: 'Install Node.js'
 
+    - task: Cache@2
+      inputs:
+        key: npm | $(Agent.OS) | package-lock.json
+        path: $(npm_config_cache)
+        restoreKeys: npm | $(Agent.OS) | package-lock.json
+      displayName: Cache NPM packages
+
     - script: |
         CYPRESS_INSTALL_BINARY=0 npm ci --ignore-scripts
-      displayName: 'npm ci'
+      displayName: 'npm ci (skipping Cypress binary)'
     
     - script: |
         npm run test:ci -ws --if-present
