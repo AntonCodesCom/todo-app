@@ -50,6 +50,10 @@ stages:
       displayName: 'npm run test:ci'
     
     - script: |
+        npm run prisma:generate -w @antoncodes/server
+      displayName: 'npm run prisma:generate (server)'
+
+    - script: |
         npm run build -ws --if-present
       displayName: 'npm run build'
 
