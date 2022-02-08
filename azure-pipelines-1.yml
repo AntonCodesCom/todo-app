@@ -1,0 +1,86 @@
+# Node.js Express Web App to Linux on Azure
+# Build a Node.js Express app and deploy it to Azure as a Linux web app.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+- main
+
+variables:
+
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
+  # Node.js Version
+  nodeJsVersion: '16.x'
+  appServiceStack: 'NODE|16-lts'
+
+  # NPM cache directory
+  npm_config_cache: $(Pipeline.Workspace)/.npm
+  cypress_cache_folder: $(Pipeline.Workspace)/.cache/Cypress
+
+stages:
+- stage: Build
+  displayName: Build stage
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '$(nodeJsVersion)'
+      displayName: 'Install Node.js'
+
+    - task: Cache@2
+      inputs:
+        key: npm | $(Agent.OS) | package-lock.json
+        path: $(npm_config_cache)
+        restoreKeys: npm | $(Agent.OS) | package-lock.json
+      displayName: Cache NPM packages
+
+    - script: |
+        CYPRESS_INSTALL_BINARY=0 npm ci --ignore-scripts
+      displayName: 'npm ci (skipping Cypress binary)'
+    
+    - script: |
+        npm run build -w @antoncodes/server
+      displayName: 'npm run build (server)'
+
+    - task: ArchiveFiles@2
+      displayName: 'Archive server files'
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/apps/server'
+        includeRootFolder: false
+        archiveType: zip
+        archiveFile: $(Build.ArtifactStagingDirectory)/server/$(Build.BuildId).zip
+        replaceExistingArchive: true
+
+    - upload: $(Build.ArtifactStagingDirectory)/server/$(Build.BuildId).zip
+      artifact: server
+
+- stage: Deploy
+  displayName: Deploy stage
+  dependsOn: Build
+  condition: succeeded()
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy
+    environment: $(SERVER_WEB_APP_NAME)
+    pool:
+      vmImage: $(vmImageName)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureWebApp@1
+            displayName: 'Azure Web App Deploy: $(SERVER_WEB_APP_NAME)'
+            inputs:
+              azureSubscription: $(SUBSCRIPTION_UUID)
+              appType: webAppLinux
+              appName: $(SERVER_WEB_APP_NAME)
+              runtimeStack: $(appServiceStack)
+              package: $(Pipeline.Workspace)/server/$(Build.BuildId).zip
+              startUpCommand: 'cd /home/site/wwwroot && npm install --only=prod && npm run start:ci'
