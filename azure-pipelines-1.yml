@@ -49,6 +49,11 @@ stages:
         npm run build -w @antoncodes/server
       displayName: 'npm run build (server)'
 
+    - script: |
+        cd apps/server
+        npm install --only=prod
+      displayName: 'npm install --only=prod (server - inside)'
+
     - task: ArchiveFiles@2
       displayName: 'Archive server files'
       inputs:
@@ -83,4 +88,4 @@ stages:
               appName: $(SERVER_WEB_APP_NAME)
               runtimeStack: $(appServiceStack)
               package: $(Pipeline.Workspace)/server/$(Build.BuildId).zip
-              startUpCommand: 'cd /home/site/wwwroot && npm install --only=prod && npm run start:ci'
+              startUpCommand: 'cd /home/site/wwwroot && npm run start:ci'
