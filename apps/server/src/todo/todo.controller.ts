@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  HttpCode,
 } from '@nestjs/common';
 import TodoService from './todo.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
@@ -17,7 +18,8 @@ export default class TodoController {
 
   @Post()
   create(@Body() createTodoDto: CreateTodoDto) {
-    return this.todoService.create(createTodoDto);
+    // return this.todoService.create(createTodoDto);
+    return 'Not yet implemented.';
   }
 
   @Get()
@@ -36,8 +38,9 @@ export default class TodoController {
     return this.todoService.update(+id, updateTodoDto);
   }
 
+  @HttpCode(204)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.todoService.remove(+id);
+  async remove(@Param('id') id: string): Promise<void> {
+    await this.todoService.deleteById(id);
   }
 }

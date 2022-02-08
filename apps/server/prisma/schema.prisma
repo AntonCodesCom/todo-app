@@ -8,7 +8,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model todos {
+model Todo {
   id    String  @id @default(dbgenerated()) @map("_id") @db.ObjectId
   done  Boolean
   label String

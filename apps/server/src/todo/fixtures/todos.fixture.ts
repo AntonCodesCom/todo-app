@@ -1,29 +1,28 @@
-import TodoEntity from '../entities/todo.entity';
-import makeTodoBatch from '../utils/make-todo-batch';
+import TodoEntity, { todoEntityInitBatch } from '../entities/todo.entity';
 
-const todosFixture: TodoEntity[] = makeTodoBatch([
+const todosFixture: TodoEntity[] = todoEntityInitBatch([
   {
-    id: 'todo-entity-1',
+    id: '6202e54d5c1009d1269cdc43',
     label: 'Init server',
     done: true,
   },
   {
-    id: 'todo-entity-2',
+    id: '6202e55878929c351a9f982e',
     label: 'Init Todo REST API',
     done: true,
   },
   {
-    id: 'todo-entity-3',
+    id: '6202e5639a730ec08cfec98b',
     label: 'Connect to database',
-    done: false,
+    done: true,
   },
   {
-    id: 'todo-entity-4',
+    id: '6202e56b474c66b2653d6bc4',
     label: 'Init Todo GraphQL API',
     done: false,
   },
   {
-    id: 'todo-entity-5',
+    id: '6202e575f1c74d0270eb4acc',
     label: 'Add auth layer',
     done: false,
   },

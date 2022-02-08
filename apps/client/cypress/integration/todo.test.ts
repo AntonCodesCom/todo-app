@@ -26,6 +26,11 @@ const mockItems: TodoItem[] = todoItemInitBatch([
   },
 ]);
 
+// db seeding
+beforeEach(() => {
+  cy.request(new URL('seed', Cypress.env('SERVER_BASE_URL')).toString());
+});
+
 //
 // e2e test
 //
