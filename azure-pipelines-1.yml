@@ -42,7 +42,7 @@ stages:
       displayName: Cache NPM packages
 
     - script: |
-        CYPRESS_INSTALL_BINARY=0 npm ci --ignore-scripts
+        CYPRESS_INSTALL_BINARY=0 npm ci
       displayName: 'npm ci (skipping Cypress binary)'
     
     - script: |
