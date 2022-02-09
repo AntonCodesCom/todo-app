@@ -53,6 +53,7 @@
   "devDependencies": {
     "@testing-library/cypress": "^8.0.2",
     "cypress": "^9.3.1",
-    "dotenv": "^15.0.0"
+    "dotenv": "^15.0.0",
+    "dotenv-flow": "^3.2.0"
   }
 }
