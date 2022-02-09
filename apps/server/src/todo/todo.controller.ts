@@ -11,6 +11,8 @@ import {
 import TodoService from './todo.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
+import TodoDto, { todoDtoFromEntity } from './todo.dto';
+import CommonResponse from 'src/common/response';
 
 @Controller('todo')
 export default class TodoController {
@@ -23,9 +25,10 @@ export default class TodoController {
   }
 
   @Get()
-  async findAll() {
-    const todos = await this.todoService.findAll();
-    return { data: todos };
+  async findAll(): Promise<CommonResponse<TodoDto[]>> {
+    const entities = await this.todoService.findAll();
+    const dtos = entities.map((x) => todoDtoFromEntity(x));
+    return { data: dtos };
   }
 
   @Get(':id')

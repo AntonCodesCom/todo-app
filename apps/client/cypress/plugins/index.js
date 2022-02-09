@@ -13,6 +13,8 @@
 // the project's config changing)
 
 require('dotenv-flow').config();
+// TODO: update .env files priority for the `dotenv-flow`
+// so it matches the .env files priority of the `react-scripts`
 
 /**
  * @type {Cypress.PluginConfig}

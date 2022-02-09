@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import todosFixture from 'src/todo/fixtures/todos.fixture';
+import todosFixture from 'src/todo/todos.fixture';
 import TodoService from 'src/todo/todo.service';
 
 @Injectable()

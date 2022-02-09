@@ -1,4 +1,4 @@
-import TodoEntity, { todoEntityInitBatch } from '../entities/todo.entity';
+import TodoEntity, { todoEntityInitBatch } from './todo.entity';
 
 const todosFixture: TodoEntity[] = todoEntityInitBatch([
   {

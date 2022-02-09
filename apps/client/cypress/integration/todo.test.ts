@@ -1,26 +1,32 @@
-import TodoItem from '../../src/Todo/interfaces/item';
+import TodoDto, {
+  todoDtoInitBatch,
+} from '@antoncodes/server/src/todo/todo.dto';
 import commonHash from '../../src/Common/utils/hash';
-import todoItemInitBatch from '../../src/Todo/utils/item-init-batch';
+
+// config
+let realServer = true;
+// uncomment this to stub the server out
+// realServer = false;
 
 // test data
-const mockItems: TodoItem[] = todoItemInitBatch([
+const mockItems: TodoDto[] = todoDtoInitBatch([
   {
-    id: 'todo-item-1-e2e',
+    id: '6203abb0460e025e0a39b09f',
     label: 'View todos',
     done: true,
   },
   {
-    id: 'todo-item-2-e2e',
+    id: '6203abb9460e025e0a39b0a0',
     label: 'Toggle a todo',
     done: false,
   },
   {
-    id: 'todo-item-3-e2e',
+    id: '6203abbf460e025e0a39b0a1',
     label: 'Delete a todo',
     done: false,
   },
   {
-    id: 'todo-item-4-e2e',
+    id: '6203abc5460e025e0a39b0a2',
     label: 'Create a todo',
     done: false,
   },
@@ -28,7 +34,8 @@ const mockItems: TodoItem[] = todoItemInitBatch([
 
 // db seeding
 beforeEach(() => {
-  cy.request(new URL('seed', Cypress.env('SERVER_BASE_URL')).toString());
+  realServer &&
+    cy.request(new URL('seed', Cypress.env('SERVER_BASE_URL')).toString());
 });
 
 //
@@ -42,7 +49,7 @@ it('Todo', () => {
     },
     (req) => {
       req.headers['Cache-Control'] = 'no-cache';
-      // req.reply({ body: { data: mockItems }});
+      !realServer && req.reply({ body: { data: mockItems } });
     }
   ).as('fetchRequest');
   cy.visit('/');
