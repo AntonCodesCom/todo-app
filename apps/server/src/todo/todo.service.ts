@@ -19,7 +19,7 @@ export default class TodoService {
   }
 
   async findAll(): Promise<TodoDto[]> {
-    return await this.prismaService.todo.findMany({});
+    return await this.prismaService.todo.findMany();
   }
 
   findOne(id: number) {
