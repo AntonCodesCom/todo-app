@@ -1,12 +1,13 @@
-import TodoDto, {
-  todoDtoInitBatch,
-} from '@antoncodes/server/src/todo/todo.dto';
+import TodoDto, { todoDtoInit } from '@antoncodes/server/src/todo/todo.dto';
 import commonHash from '../../src/Common/utils/hash';
 
+// utility
+function todoDtoInitBatch(partials: Partial<TodoDto>[]): TodoDto[] {
+  return partials.map((x) => todoDtoInit(x));
+}
+
 // config
-let realServer = true;
-// uncomment this to stub the server out
-// realServer = false;
+const serverMocked = Cypress.env('SERVER_MOCKED') === 'true';
 
 // test data
 const mockItems: TodoDto[] = todoDtoInitBatch([
@@ -31,10 +32,16 @@ const mockItems: TodoDto[] = todoDtoInitBatch([
     done: false,
   },
 ]);
+const updatedItemIndex = 0; // first
+
+// utility
+function composeUrl(pathname: string): string {
+  return new URL(pathname, Cypress.env('SERVER_BASE_URL')).toString();
+}
 
 // db seeding
 beforeEach(() => {
-  realServer &&
+  !serverMocked &&
     cy.request(new URL('seed', Cypress.env('SERVER_BASE_URL')).toString());
 });
 
@@ -42,19 +49,23 @@ beforeEach(() => {
 // e2e test
 //
 it('Todo', () => {
+  // intercepting fetch request
   cy.intercept(
     {
       method: 'GET',
-      url: new URL('todo', Cypress.env('SERVER_BASE_URL')).toString(),
+      url: composeUrl('todo'),
     },
     (req) => {
       req.headers['Cache-Control'] = 'no-cache';
-      !realServer && req.reply({ body: { data: mockItems } });
+      serverMocked && req.reply({ body: { data: mockItems } });
     }
   ).as('fetchRequest');
+  // opening the page
   cy.visit('/');
+  // read (fetch)
   cy.wait('@fetchRequest').its('response').as('fetchResponse');
   cy.findByRole('list', { name: /^my todos$/i })
+    .as('todoList')
     .invoke('attr', 'data-hash')
     .then((actualHash) => {
       cy.get('@fetchResponse')
@@ -62,5 +73,50 @@ it('Todo', () => {
         .then((responseData) => {
           expect(actualHash).to.eq(commonHash(responseData as any));
         });
+    });
+  // update
+  cy.intercept(
+    {
+      method: 'PATCH',
+      url: composeUrl('todo/**'),
+    },
+    (req) => {
+      // req.headers['Cache-Control'] = 'no-cache';
+      serverMocked &&
+        req.reply({
+          body: {
+            data: {
+              ...mockItems[updatedItemIndex],
+              done: true,
+            },
+          },
+        });
+    }
+  ).as('updateRequest');
+  cy.get('@todoList')
+    .findAllByRole('listitem')
+    .eq(updatedItemIndex)
+    .as('todoItem1')
+    .findByRole('checkbox')
+    .as('todoItem1Checkbox')
+    .click();
+  cy.wait('@updateRequest')
+    .as('updateRequestResult')
+    .its('request')
+    .then((request) => {
+      const { url, body } = request;
+      cy.get('@fetchResponse')
+        .its('body.data')
+        .then((dtos) => {
+          const { id, done } = dtos[updatedItemIndex];
+          expect(url).to.eq(composeUrl(`/todo/${id}`));
+          expect(body).to.deep.eq({ done: !done });
+        });
+    });
+  cy.get('@updateRequestResult')
+    .its('response.body.data')
+    .then((data) => {
+      const condition: string = (data.done ? '' : 'not.') + 'be.checked';
+      cy.get('@todoItem1Checkbox').should(condition);
     });
 });

@@ -1,25 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import PrismaService from 'src/prisma/prisma.service';
-import { UpdateTodoDto } from './dto/update-todo.dto';
-import TodoEntity, { TodoEntityCreate } from './todo.entity';
+import TodoDto, { TodoDtoCreate, TodoDtoUpdate } from './todo.dto';
 
 @Injectable()
 export default class TodoService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create(createPartial: TodoEntityCreate): Promise<void> {
+  async create(createPartial: TodoDtoCreate | TodoDto): Promise<void> {
     await this.prismaService.todo.create({
       data: createPartial,
     });
   }
 
-  async createMany(createPartials: TodoEntityCreate[]): Promise<void> {
+  async createMany(createPartials: TodoDtoCreate[] | TodoDto[]): Promise<void> {
     await this.prismaService.todo.createMany({
       data: createPartials,
     });
   }
 
-  async findAll(): Promise<TodoEntity[]> {
+  async findAll(): Promise<TodoDto[]> {
     return await this.prismaService.todo.findMany({});
   }
 
@@ -27,8 +26,11 @@ export default class TodoService {
     return `This action returns a #${id} todo`;
   }
 
-  update(id: number, updateTodoDto: UpdateTodoDto) {
-    return `This action updates a #${id} todo`;
+  async update(id: string, updateTodoDto: TodoDtoUpdate): Promise<TodoDto> {
+    return await this.prismaService.todo.update({
+      where: { id },
+      data: updateTodoDto,
+    });
   }
 
   async deleteById(id: string): Promise<void> {

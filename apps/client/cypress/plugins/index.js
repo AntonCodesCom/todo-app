@@ -24,5 +24,6 @@ module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
   config.env.SERVER_BASE_URL = process.env.CYPRESS_SERVER_BASE_URL;
+  config.env.SERVER_MOCKED = process.env.CYPRESS_SERVER_MOCKED;
   return config;
 };

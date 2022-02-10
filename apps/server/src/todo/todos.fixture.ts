@@ -1,6 +1,10 @@
-import TodoEntity, { todoEntityInitBatch } from './todo.entity';
+import TodoDto, { todoDtoInit } from './todo.dto';
 
-const todosFixture: TodoEntity[] = todoEntityInitBatch([
+function todoDtoInitBatch(partials: Partial<TodoDto>[]): TodoDto[] {
+  return partials.map((x) => todoDtoInit(x));
+}
+
+const todosFixture: TodoDto[] = todoDtoInitBatch([
   {
     id: '6202e54d5c1009d1269cdc43',
     label: 'Init server',

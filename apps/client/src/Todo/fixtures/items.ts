@@ -1,5 +1,4 @@
-import TodoItem from 'Todo/interfaces/item';
-import todoItemInitBatch from 'Todo/utils/item-init-batch';
+import TodoItem, { todoItemInitBatch } from 'Todo/interfaces/item';
 
 const todoItemsFixture: TodoItem[] = todoItemInitBatch([
   {

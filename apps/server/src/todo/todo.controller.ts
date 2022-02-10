@@ -10,8 +10,7 @@ import {
 } from '@nestjs/common';
 import TodoService from './todo.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
-import { UpdateTodoDto } from './dto/update-todo.dto';
-import TodoDto, { todoDtoFromEntity } from './todo.dto';
+import TodoDto, { TodoDtoUpdate } from './todo.dto';
 import CommonResponse from 'src/common/response';
 
 @Controller('todo')
@@ -26,8 +25,7 @@ export default class TodoController {
 
   @Get()
   async findAll(): Promise<CommonResponse<TodoDto[]>> {
-    const entities = await this.todoService.findAll();
-    const dtos = entities.map((x) => todoDtoFromEntity(x));
+    const dtos = await this.todoService.findAll();
     return { data: dtos };
   }
 
@@ -37,8 +35,12 @@ export default class TodoController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTodoDto: UpdateTodoDto) {
-    return this.todoService.update(+id, updateTodoDto);
+  async update(
+    @Param('id') id: string,
+    @Body() dto: TodoDtoUpdate,
+  ): Promise<CommonResponse<TodoDto>> {
+    const updated = await this.todoService.update(id, dto);
+    return { data: updated };
   }
 
   @HttpCode(204)
