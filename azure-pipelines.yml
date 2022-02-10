@@ -46,12 +46,12 @@ stages:
       displayName: 'npm ci (skipping Cypress binary)'
     
     - script: |
-        npm run test:ci -ws --if-present
-      displayName: 'npm run test:ci'
-    
-    - script: |
         npm run prisma:generate -w @antoncodes/server
       displayName: 'npm run prisma:generate (server)'
+    
+    - script: |
+        npm run test:ci -ws --if-present
+      displayName: 'npm run test:ci'
 
     - script: |
         npm run build -ws --if-present
