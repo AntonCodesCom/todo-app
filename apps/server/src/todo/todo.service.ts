@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import PrismaService from 'src/prisma/prisma.service';
 import TodoDto, { TodoDtoCreate, TodoDtoUpdate } from './todo.dto';
+import todosFixture from './todos.fixture';
 
 @Injectable()
 export default class TodoService {
@@ -22,8 +23,8 @@ export default class TodoService {
     return await this.prismaService.todo.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} todo`;
+  findOne(id: string) {
+    return todosFixture[0];
   }
 
   async update(id: string, updateTodoDto: TodoDtoUpdate): Promise<TodoDto> {

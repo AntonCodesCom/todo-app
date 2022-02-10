@@ -31,7 +31,7 @@ export default class TodoController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.todoService.findOne(+id);
+    return this.todoService.findOne(id);
   }
 
   @Patch(':id')
