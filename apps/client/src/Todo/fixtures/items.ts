@@ -1,5 +1,13 @@
-import TodoItem, { todoItemInitBatch } from 'Todo/interfaces/item';
+import TodoItem, { todoItemInit } from 'Todo/interfaces/item';
 
+// utility
+function todoItemInitBatch(partials: Partial<TodoItem>[]): TodoItem[] {
+  return partials.map((x) => todoItemInit(x));
+}
+
+//
+// fixture
+//
 const todoItemsFixture: TodoItem[] = todoItemInitBatch([
   {
     id: 'todo-item-1',

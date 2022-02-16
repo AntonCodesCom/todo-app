@@ -1,4 +1,3 @@
-import { ObjectType, Field, InputType, PartialType } from '@nestjs/graphql';
 import { Todo as TodoModel } from '@prisma/client';
 import { ObjectId } from 'bson';
 
@@ -15,31 +14,13 @@ export function todoDtoInit({
   };
 }
 
+// DTO create interface
+export interface TodoDtoCreate extends Omit<TodoDto, 'id'> {}
+
+// DTO update interface
+export interface TodoDtoUpdate extends Partial<TodoDtoCreate> {}
+
 //
-// DTO class
+// DTO interface
 //
-@ObjectType()
-export default class TodoDto implements TodoModel {
-  @Field()
-  id: string;
-
-  @Field()
-  label: string;
-
-  @Field((type) => Boolean)
-  done: boolean;
-}
-
-// DTO create class
-@InputType()
-export class TodoDtoCreate {
-  @Field()
-  label: string;
-
-  @Field((type) => Boolean)
-  done: boolean;
-}
-
-// DTO update class
-@InputType()
-export class TodoDtoUpdate extends PartialType(TodoDtoCreate) {}
+export default interface TodoDto extends TodoModel {}

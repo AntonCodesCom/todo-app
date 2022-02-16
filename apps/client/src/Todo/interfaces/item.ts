@@ -1,3 +1,4 @@
+import TodoDto from '@antoncodes/server/src/todo/todo.dto';
 import { ObjectId } from 'bson';
 
 // initializer
@@ -13,9 +14,11 @@ export function todoItemInit({
   };
 }
 
-// bulk initializer
-export function todoItemInitBatch(partials: Partial<TodoItem>[]): TodoItem[] {
-  return partials.map((x) => todoItemInit(x));
+// converter from DTO
+export function todoItemFromDto(dto: TodoDto): TodoItem {
+  return {
+    ...dto,
+  };
 }
 
 // item update interface

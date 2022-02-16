@@ -82,12 +82,13 @@ it('Todo', () => {
     },
     (req) => {
       // req.headers['Cache-Control'] = 'no-cache';
+      const itemToUpdate = mockItems[updatedItemIndex];
       serverMocked &&
         req.reply({
           body: {
             data: {
-              ...mockItems[updatedItemIndex],
-              done: true,
+              ...itemToUpdate,
+              done: !itemToUpdate.done, // can be set manually
             },
           },
         });

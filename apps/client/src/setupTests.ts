@@ -6,3 +6,8 @@ import '@testing-library/jest-dom';
 
 // mocking `fetch`
 global.fetch = () => new Promise(() => {});
+
+jest.mock('react-redux', () => ({
+  useSelector: () => undefined,
+  useDispatch: () => undefined,
+}));

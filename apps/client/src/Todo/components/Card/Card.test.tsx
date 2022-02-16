@@ -1,7 +1,5 @@
 import { render, screen, within } from '@testing-library/react';
-import CommonQueryResult from 'Common/interfaces/query-result';
 import todoItemsFixture from 'Todo/fixtures/items';
-import TodoItem from 'Todo/interfaces/item';
 import useTodoItemUpdate from 'Todo/mutations/use-item-update';
 import TodoCard from './Card';
 
@@ -10,9 +8,6 @@ jest.mock('Todo/mutations/use-item-update');
 
 // test data
 const mockItem = todoItemsFixture[0];
-const mockQueryResult: CommonQueryResult<TodoItem> = {
-  loading: false,
-};
 
 //
 // integration test
@@ -38,25 +33,6 @@ describe('TodoCard', () => {
     expect(mutateFnSpy).toHaveBeenCalledWith(mockItem.id, {
       done: !checkbox.checked,
     });
-  });
-
-  // TODO: remove when todo list reactive variable is implemented
-  it('should set checkbox state due to `data`', () => {
-    const mockDone = false;
-    (useTodoItemUpdate as jest.Mock).mockReturnValue([
-      () => {},
-      {
-        ...mockQueryResult,
-        data: {
-          ...mockItem,
-          done: mockDone,
-        },
-      },
-    ]);
-    render(<TodoCard item={mockItem} />);
-    const card = screen.getByTestId('TodoCard');
-    const checkbox = within(card).getByRole('checkbox') as HTMLInputElement;
-    expect(checkbox.checked).toBe(mockDone);
   });
 
   it('should be disabled on `loading`', () => {

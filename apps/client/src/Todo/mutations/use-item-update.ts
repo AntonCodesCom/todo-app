@@ -1,56 +1,81 @@
+import TodoDto from '@antoncodes/server/src/todo/todo.dto';
 import CommonMutationResult from 'Common/interfaces/mutation-result';
 import commonFetch from 'Common/utils/fetch';
 import { useState } from 'react';
-import TodoItem, { todoItemInit, TodoItemUpdate } from 'Todo/interfaces/item';
+import { useDispatch } from 'react-redux';
+import TodoItem, {
+  todoItemFromDto,
+  todoItemInit,
+  TodoItemUpdate,
+} from 'Todo/interfaces/item';
+import { todoUpdateItem } from 'Todo/store/actions';
 
+//
+// dev mutation
+//
+// TODO: invent something to get rid of the `dispatch` stuff duplication
+// in both queries
+//
 /* eslint-disable */
 function useTodoItemUpdateDev(): CommonMutationResult<
   [string, TodoItemUpdate],
   TodoItem
 > {
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error>();
-  const [data, setData] = useState<TodoItem>();
   function update(id: string, { done }: TodoItemUpdate) {
     setLoading(true);
     setError(undefined);
-    setData(undefined);
     setTimeout(() => {
-      setData(
-        todoItemInit({
+      const simulateError = false;
+      if (simulateError) {
+        setError(new Error('Test error.'));
+      } else {
+        const item = todoItemInit({
+          id,
           done,
-        })
-      );
-      // setError(new Error('Test error.'));
+        });
+        dispatch(todoUpdateItem(item));
+      }
       setLoading(false);
     }, 1000);
   }
 
-  return [update, { loading, error, data }];
+  return [update, { loading, error }];
 }
 /* eslint-enable */
 
+//
+// prod mutation
+//
 function useTodoItemUpdateProd(): CommonMutationResult<
   [string, TodoItemUpdate],
   TodoItem
 > {
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error>();
-  const [data, setData] = useState<TodoItem>();
 
-  function update(id: string, itemUpdate: TodoItemUpdate) {
+  async function update(id: string, itemUpdate: TodoItemUpdate) {
     setLoading(true);
-    commonFetch(`/todo/${id}`, {
-      method: 'PATCH',
-      body: JSON.stringify(itemUpdate),
-    })
-      .then((res) => res.json())
-      .then((data) => setData(data.data as TodoItem))
-      .catch((err) => setError(err))
-      .finally(() => setLoading(false));
+    try {
+      const res = await commonFetch(`/todo/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(itemUpdate),
+      });
+      const json = await res.json();
+      const dto = json.data as TodoDto;
+      const item = todoItemFromDto(dto);
+      dispatch(todoUpdateItem(item));
+    } catch (err: any) {
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
   }
 
-  return [update, { loading, error, data }];
+  return [update, { loading, error }];
 }
 
 // const useTodoItemUpdate = useTodoItemUpdateDev;
